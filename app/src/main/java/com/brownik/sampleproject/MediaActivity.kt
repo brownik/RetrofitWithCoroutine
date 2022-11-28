@@ -11,7 +11,7 @@ class MediaActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMediaBinding
     private lateinit var mediaInfoViewModel: MediaInfoViewModel
     private val mediaInfoListAdapter: MediaInfoListAdapter by lazy {
-        MediaInfoListAdapter{}
+        MediaInfoListAdapter()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,6 +19,7 @@ class MediaActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        binding.mediaInfoLayer.adapter = mediaInfoListAdapter
         mediaInfoViewModel = ViewModelProvider(
             this,
             MediaInfoViewModelFactory()
@@ -29,7 +30,7 @@ class MediaActivity : AppCompatActivity() {
 
     private fun setMediaInfoLiveData() {
         mediaInfoViewModel.mediaInfoDataList.observe(this@MediaActivity, Observer {
-            mediaInfoListAdapter.submitList(it.toMutableList())  // LiveData list 변경에 따른 view 업데이트
+            mediaInfoListAdapter.submitList(it.toMutableList()) // LiveData list 변경에 따른 view 업데이트
         })
     }
 }

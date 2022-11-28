@@ -1,9 +1,10 @@
 package com.brownik.sampleproject
 
 import android.annotation.SuppressLint
-import android.net.Uri
+import android.os.Build
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -13,9 +14,10 @@ object MediaInfoBindingAdapter {
     @SuppressLint("CheckResult")
     @BindingAdapter("app:loadImage")
     @JvmStatic
-    fun loadImage(targetView: ImageView, path: Uri?) {
+    fun loadImage(targetView: ImageView, path: String?) {
+        val uri = "https://photo2.club5678.com/tape/image/${path}?size=s&gifAniYn=y"
         Glide.with(targetView.context)
-            .load(path)
+            .load(uri)
             .error(R.drawable.ic_launcher_foreground)
             .apply(RequestOptions.bitmapTransform(RoundedCorners(15)))
             .into(targetView)
@@ -26,13 +28,13 @@ object MediaInfoBindingAdapter {
     @JvmStatic
     fun makeDuration(targetView: TextView, duration: Long?) {
         duration?.let {
-            val time = it / 1000
-            val minute = time / 60
-            val second = time % 60
+            val minute = it / 60
+            val second = it % 60
             targetView.text = ("${minute}분 ${second}초")
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     @SuppressLint("ResourceAsColor")
     @BindingAdapter("app:changeColor")
     @JvmStatic

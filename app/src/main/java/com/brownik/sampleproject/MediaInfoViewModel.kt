@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -57,20 +56,15 @@ class MediaInfoViewModel : ViewModel() {
     private val mediaRetrofitClient = MediaRetrofitClient.getMediaInfoDataInstance()
 
     private fun getMediaInfoDataList() {
-        viewModelScope.launch {
-            val response = mediaRetrofitClient.getMusicInfoData(params)
-            withContext(Dispatchers.IO) {
-                if (response.isSuccessful) {
-                    var dataList = listOf<MediaInfoData>()
-                    response.body()?.data.let {
-                        if (it != null) {
-                            dataList = it
-                        }
-                        _mediaInfoDataList.value = dataList
-                    }
-                } else {
-                    Log.d("qwe123", "Error: ${response.message()}")
+        CoroutineScope(Dispatchers.Main).launch {
+            val response = mediaRetrofitClient.getMediaInfoData(params)
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    _mediaInfoDataList.value = it.data
                 }
+            } else {
+                _mediaInfoDataList.value = emptyList()
+                Log.d("qwe123", "Error: ${response.message()}")
             }
         }
     }
