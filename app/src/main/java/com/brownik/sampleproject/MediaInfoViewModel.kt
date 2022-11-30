@@ -14,6 +14,8 @@ class MediaInfoViewModel : ViewModel() {
     private var _mediaInfoDataList = MutableLiveData<List<MediaInfoData>>()
     val mediaInfoDataList: LiveData<List<MediaInfoData>> = _mediaInfoDataList
 
+
+
     private val _selectedMediaInfoData = MutableLiveData<MediaInfoData>()
     val selectedMediaInfoData: LiveData<MediaInfoData> = _selectedMediaInfoData
 
@@ -54,9 +56,8 @@ class MediaInfoViewModel : ViewModel() {
     }
     private val params = bodyJson.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
     private val mediaRetrofitClient = MediaRetrofitClient.getMediaInfoDataInstance()
-
-    private fun getMediaInfoDataList() {
-        CoroutineScope(Dispatchers.Main).launch {
+    private fun getMediaInfoDataList() =
+        CoroutineScope(Dispatchers.IO).launch {
             val response = mediaRetrofitClient.getMediaInfoData(params)
             if (response.isSuccessful) {
                 response.body()?.let {
@@ -67,9 +68,9 @@ class MediaInfoViewModel : ViewModel() {
                 Log.d("qwe123", "Error: ${response.message()}")
             }
         }
-    }
 
     override fun onCleared() {
         super.onCleared()
+        getMediaInfoDataList().cancel()
     }
 }
